@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_progress_app/routes/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,29 +12,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       theme: ThemeData(useMaterial3: false, primarySwatch: Colors.blue),
-      // Use a new widget for your home screen
-      home: const MyHomePage(),
+      initialRoute: "/",
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case "/":
+            {
+              return MaterialPageRoute(builder: (context) => Login());
+            }
+          default:
+            {
+              return _errorRoute();
+            }
+        }
+      },
     );
   }
 }
 
-// This new widget's build method has a `context`
-// that is BENEATH the MaterialApp, so it can find the theme.
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text("Student Progress"),
+Route<dynamic> _errorRoute() {
+  return MaterialPageRoute(
+    builder: (_) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Error')),
+        body: const Center(
+          child: Text('Something went wrong with the navigation!'),
         ),
-        body: const Center(child: Text('My Home Page')),
-      ),
-    );
-  }
+      );
+    },
+  );
 }
