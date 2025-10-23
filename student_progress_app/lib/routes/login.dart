@@ -5,6 +5,8 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Login")));
+    return SafeArea(
+      child: Scaffold(appBar: AppBar(title: Text("Login"))),
+    );
   }
 }

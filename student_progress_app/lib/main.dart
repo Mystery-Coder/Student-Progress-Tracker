@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_progress_app/routes/home.dart';
 import 'package:student_progress_app/routes/login.dart';
 
 void main() {
@@ -13,12 +14,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: false, primarySwatch: Colors.blue),
-      initialRoute: "/",
+      initialRoute: "/home",
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case "/":
             {
               return MaterialPageRoute(builder: (context) => Login());
+            }
+          case "/home":
+            {
+              return MaterialPageRoute(builder: (context) => Home());
             }
           default:
             {
