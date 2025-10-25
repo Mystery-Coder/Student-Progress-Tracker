@@ -28,7 +28,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Study Flashcards",
+            "Student Grades",
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
           backgroundColor: Colors.blue,
@@ -36,13 +36,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ),
         body: TabBarView(
           controller: _tabController,
-          children: const [Center(child: Text("This is the Decks Page"))],
+          children: const [Center(child: Text("Page to display results"))],
         ),
         bottomNavigationBar: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(icon: Icon(Icons.add), text: "New"),
-            Tab(icon: Icon(Icons.folder), text: "Saved"),
+            Tab(icon: Icon(Icons.add)),
+            Tab(icon: Icon(Icons.folder)),
           ],
           labelColor: Colors.blue,
         ),
