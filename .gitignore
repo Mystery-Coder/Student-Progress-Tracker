@@ -1,2 +1,4 @@
 *.tldr
 *.env
+
+__pycache__
