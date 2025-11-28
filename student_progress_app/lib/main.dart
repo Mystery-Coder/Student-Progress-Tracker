@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:student_progress_app/routes/home.dart';
-import 'package:student_progress_app/routes/login.dart';
+import 'package:student_progress_app/routes/tabs.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  await Supabase.initialize(url: '...', anonKey: '...');
+  runApp(AppRoot());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AppRoot extends StatelessWidget {
+  const AppRoot({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +19,11 @@ class MyApp extends StatelessWidget {
       initialRoute: "/home",
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case "/":
+          case Home.routeName:
             {
-              return MaterialPageRoute(builder: (context) => Login());
+              return MaterialPageRoute(builder: (context) => Home());
             }
-          case "/home":
+          case Tabs.routeName:
             {
               return MaterialPageRoute(builder: (context) => Home());
             }
