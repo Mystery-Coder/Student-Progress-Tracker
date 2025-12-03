@@ -24,3 +24,7 @@ React and Flutter application for tracking student courses semester-wise and pro
 -   [ ] ML models for Role Suggestion and placement percent
 -   [ ] React Application
 -   [ ] Flutter Application
+
+# Schema
+
+<p align="center"><img src="schema.png" /></p>
