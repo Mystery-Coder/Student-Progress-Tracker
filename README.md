@@ -28,3 +28,74 @@ React and Flutter application for tracking student courses semester-wise and pro
 # Schema
 
 <p align="center"><img src="schema.png" /></p>
+
+# Example DB
+
+### STUDENT
+
+| USN        | First_Name | Last_Name | Date_born  | Sex | Phone_No   | Father_Name   | Mother_Name  | SSLC | PUC  | Number_Of_Internships | No_of_Hackathons | No_of_Projects |
+| ---------- | ---------- | --------- | ---------- | --- | ---------- | ------------- | ------------ | ---- | ---- | --------------------- | ---------------- | -------------- |
+| 1RV21CS001 | Arjun      | Kumar     | 2003-04-15 | M   | 9876543210 | Ramesh Kumar  | Sita Kumar   | 92.5 | 88.2 | 2                     | 3                | 4              |
+| 1RV21CS002 | Neha       | Sharma    | 2003-11-02 | F   | 9876501234 | Mahesh Sharma | Pooja Sharma | 94.0 | 90.5 | 1                     | 2                | 3              |
+| 1RV21CS003 | Rahul      | Verma     | 2002-08-19 | M   | 9845321678 | Prakash Verma | Anita Verma  | 89.3 | 85.7 | 0                     | 1                | 2              |
+| 1RV21CS004 | Sneha      | Rao       | 2003-01-28 | F   | 9812346785 | Suresh Rao    | Lakshmi Rao  | 95.1 | 92.0 | 3                     | 4                | 5              |
+| 1RV21CS005 | Kiran      | Patel     | 2003-06-11 | M   | 9821456784 | Vikas Patel   | Meera Patel  | 88.4 | 86.2 | 1                     | 1                | 2              |
+
+### Admin_Details
+
+| Admin_ID | Admin_Name    |
+| -------- | ------------- |
+| ADM001   | Prof. Narayan |
+| ADM002   | Prof. Divya   |
+
+### Group_Details
+
+| Group_ID | Group_Name            |
+| -------- | --------------------- |
+| 101      | AI Research Club      |
+| 102      | Full Stack Developers |
+
+### Group_Entries
+
+| Group_ID | Admin_ID | S_USN      |
+| -------- | -------- | ---------- |
+| 101      | ADM001   | 1RV21CS001 |
+| 101      | ADM001   | 1RV21CS002 |
+| 101      | ADM001   | 1RV21CS004 |
+| 102      | ADM002   | 1RV21CS003 |
+| 102      | ADM002   | 1RV21CS005 |
+
+### ACADEMIC_DETAILS
+
+| AD_USSN    | Course_Code | Course_Name         | Semester | Grade | Credits_earned | Year |
+| ---------- | ----------- | ------------------- | -------- | ----- | -------------- | ---- |
+| 1RV21CS001 | CS301       | Data Structures     | 3        | A     | 4              | 2023 |
+| 1RV21CS001 | CS401       | Algorithms          | 4        | A+    | 4              | 2024 |
+| 1RV21CS002 | CS301       | Data Structures     | 3        | A+    | 4              | 2023 |
+| 1RV21CS002 | CS405       | Operating Systems   | 4        | A+    | 4              | 2024 |
+| 1RV21CS003 | CS201       | C Programming       | 2        | B+    | 3              | 2022 |
+| 1RV21CS003 | CS301       | Data Structures     | 3        | B     | 4              | 2023 |
+| 1RV21CS004 | CS301       | Data Structures     | 3        | A+    | 4              | 2023 |
+| 1RV21CS004 | CS403       | Computer Networks   | 4        | A     | 4              | 2024 |
+| 1RV21CS005 | CS201       | C Programming       | 2        | A     | 3              | 2022 |
+| 1RV21CS005 | CS305       | Database Management | 3        | B+    | 3              | 2023 |
+
+### Skills
+
+| S_USN      | Skill_Name       | Rating |
+| ---------- | ---------------- | ------ |
+| 1RV21CS001 | Python           | 4.5    |
+| 1RV21CS001 | Machine Learning | 4.0    |
+| 1RV21CS001 | SQL              | 3.8    |
+| 1RV21CS002 | Java             | 4.4    |
+| 1RV21CS002 | Data Analysis    | 4.2    |
+| 1RV21CS002 | HTML/CSS         | 4.0    |
+| 1RV21CS003 | C Programming    | 3.5    |
+| 1RV21CS003 | Git              | 3.0    |
+| 1RV21CS003 | Linux            | 3.2    |
+| 1RV21CS004 | Python           | 4.8    |
+| 1RV21CS004 | Deep Learning    | 4.5    |
+| 1RV21CS004 | TensorFlow       | 4.3    |
+| 1RV21CS005 | JavaScript       | 4.1    |
+| 1RV21CS005 | React            | 4.0    |
+| 1RV21CS005 | SQL              | 3.6    |
