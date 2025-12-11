@@ -19,9 +19,9 @@ React and Flutter application for tracking student courses semester-wise and pro
 # Development Check List
 
 -   [x] Make Database Schema using DrawSQL
--   [ ] Setup Supabase with Data Definition Language exported from DrawSQL
+-   [x] Setup Supabase with Data Definition Language exported from DrawSQL
 -   [ ] Setup Python FastAPI
--   [ ] ML models for Role Suggestion and placement percent
+-   [ ] ML model for probability of placement
 -   [ ] React Application
 -   [ ] Flutter Application
 
