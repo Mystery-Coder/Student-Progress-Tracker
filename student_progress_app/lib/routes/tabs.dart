@@ -37,7 +37,10 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
         ),
         body: TabBarView(
           controller: _tabController,
-          children: const [Center(child: Text("Page to display results"))],
+          children: const [
+            Center(child: Text("Page to display results")),
+            Center(child: Text("Page to display results")),
+          ],
         ),
         bottomNavigationBar: TabBar(
           controller: _tabController,

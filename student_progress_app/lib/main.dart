@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:student_progress_app/routes/home.dart';
+import 'package:student_progress_app/routes/auth_check.dart';
+import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/tabs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
-  await Supabase.initialize(url: '...', anonKey: '...');
+  await Supabase.initialize(
+    url: 'https://ztagrfwdunxdrnvledax.supabase.co',
+    anonKey: 'sb_publishable_IjvDDDK4jlzu6sKnGFLauQ_nWQHFCTn',
+  );
   runApp(AppRoot());
 }
 
@@ -16,16 +20,20 @@ class AppRoot extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: false, primarySwatch: Colors.blue),
-      initialRoute: "/home",
+      initialRoute: AuthCheck.routeName,
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case Home.routeName:
+          case Login.routeName:
             {
-              return MaterialPageRoute(builder: (context) => Home());
+              return MaterialPageRoute(builder: (context) => Login());
+            }
+          case AuthCheck.routeName:
+            {
+              return MaterialPageRoute(builder: (context) => AuthCheck());
             }
           case Tabs.routeName:
             {
-              return MaterialPageRoute(builder: (context) => Home());
+              return MaterialPageRoute(builder: (context) => Tabs());
             }
           default:
             {
