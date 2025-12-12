@@ -20,17 +20,17 @@ VALUES
 
 INSERT INTO "Group_Details" ("Group_ID","Group_Name")
 VALUES
-(101,'AI Research Club'),
-(102,'Full Stack Developers');
+("101",'AI Research Club'),
+("102",'Full Stack Developers');
 
 
 INSERT INTO "Group_Entries" ("Group_ID","Admin_ID","S_USN")
 VALUES
-(101,'ADM001','1RV21CS001'),
-(101,'ADM001','1RV21CS002'),
-(101,'ADM001','1RV21CS004'),
-(102,'ADM002','1RV21CS003'),
-(102,'ADM002','1RV21CS005');
+("101",'ADM001','1RV21CS001'),
+("101",'ADM001','1RV21CS002'),
+("101",'ADM001','1RV21CS004'),
+("102",'ADM002','1RV21CS003'),
+("102",'ADM002','1RV21CS005');
 
 INSERT INTO "ACADEMIC_DETAILS"
 ("AD_USSN","Course_Code","Course_Name","Semester","Grade","Credits_earned","Year")
