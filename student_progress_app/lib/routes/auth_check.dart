@@ -25,10 +25,12 @@ class _AuthCheckState extends State<AuthCheck> {
     await Future.delayed(Duration(milliseconds: 500));
     Session? session = Supabase.instance.client.auth.currentSession;
 
-    if (mounted) {
-      if (session != null) {
+    if (session != null) {
+      if (mounted) {
         Navigator.pushReplacementNamed(context, Tabs.routeName);
-      } else {
+      }
+    } else {
+      if (mounted) {
         Navigator.pushReplacementNamed(context, Login.routeName);
       }
     }
