@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_progress_app/routes/login.dart';
+import 'package:student_progress_app/types.dart';
+import 'package:student_progress_app/widgets/details_tab.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Tabs extends StatefulWidget {
@@ -17,11 +19,19 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
   late final user = session?.user;
   // ignore: non_constant_identifier_names
   String USN = "";
+  StudentDetails studentDetails = StudentDetails(
+    USN: "",
+    PUC: 0,
+    SSLC: 0,
+    noOfHackathons: 0,
+    noOfInternships: 0,
+    noOfProjects: 0,
+  );
 
   @override
   initState() {
     super.initState();
-    _getUSN();
+    _getDetails();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -31,14 +41,31 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _getUSN() async {
-    var data = await supabase
-        .from("STUDENT")
-        .select('USN')
-        .eq("user_id", user!.id);
-    setState(() {
-      USN = data[0]["USN"];
-    });
+  void _getDetails() async {
+    try {
+      final res = await supabase.rpc(
+        'get_student_details_from_id',
+        params: {'id_of_student': user?.id},
+      );
+      Map<String, dynamic> details = res[0];
+      print(details);
+      setState(() {
+        USN = details["USN"];
+        studentDetails = StudentDetails(
+          USN: details["USN"],
+          PUC: details["PUC"],
+          SSLC: details["SSLC"],
+          noOfHackathons: details["No_of_Hackathons"],
+          noOfInternships: details["Number_Of_Internships"],
+          noOfProjects: details["No_of_Projects"],
+        );
+      });
+    } catch (e) {
+      print("details error: $e");
+    }
+    // setState(() {
+    //   USN = data[0]["USN"];
+    // });
   }
 
   @override
@@ -46,16 +73,29 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
     return SafeArea(
       child: Scaffold(
         drawer: Drawer(
-          child: Column(
+          child: ListView(
+            padding: EdgeInsets.zero,
             children: [
-              TextButton(
-                onPressed: () async {
-                  await supabase.auth.signOut();
-                  if (context.mounted) {
-                    Navigator.pushReplacementNamed(context, Login.routeName);
+              DrawerHeader(
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text("Logout"),
+                onTap: () async {
+                  try {
+                    await supabase.auth.signOut();
+                    if (context.mounted) {
+                      Navigator.pushReplacementNamed(context, Login.routeName);
+                    }
+                  } catch (e) {
+                    print("Caught error: $e");
                   }
                 },
-                child: Text("Logout"),
               ),
             ],
           ),
@@ -67,16 +107,16 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
         ),
         body: TabBarView(
           controller: _tabController,
-          children: const [
-            Center(child: Text("Page to display results")),
+          children: [
+            DetailsTab(details: studentDetails),
             Center(child: Text("Page to display results")),
           ],
         ),
         bottomNavigationBar: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(icon: Icon(Icons.add)),
-            Tab(icon: Icon(Icons.folder)),
+            Tab(icon: Icon(Icons.info)),
+            Tab(icon: Icon(Icons.group)),
           ],
           labelColor: Colors.blue,
         ),

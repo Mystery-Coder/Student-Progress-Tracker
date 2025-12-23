@@ -52,6 +52,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController password = TextEditingController();
   TextEditingController motherName = TextEditingController();
   TextEditingController fatherName = TextEditingController();
+  // ignore: non_constant_identifier_names
   TextEditingController DOB = TextEditingController();
   TextEditingController phone = TextEditingController();
 
