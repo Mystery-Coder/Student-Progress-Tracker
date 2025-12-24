@@ -43,22 +43,13 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
 
   void _getDetails() async {
     try {
-      final res = await supabase.rpc(
-        'get_student_details_from_id',
-        params: {'id_of_student': user?.id},
-      );
-      Map<String, dynamic> details = res[0];
-      print(details);
+      final data = await supabase
+          .from("STUDENT")
+          .select("USN")
+          .eq("user_id", user!.id);
+
       setState(() {
-        USN = details["USN"];
-        studentDetails = StudentDetails(
-          USN: details["USN"],
-          PUC: details["PUC"],
-          SSLC: details["SSLC"],
-          noOfHackathons: details["No_of_Hackathons"],
-          noOfInternships: details["Number_Of_Internships"],
-          noOfProjects: details["No_of_Projects"],
-        );
+        USN = data[0]["USN"];
       });
     } catch (e) {
       print("details error: $e");
@@ -108,7 +99,7 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           children: [
-            DetailsTab(details: studentDetails),
+            DetailsTab(),
             Center(child: Text("Page to display results")),
           ],
         ),
