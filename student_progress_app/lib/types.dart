@@ -17,3 +17,10 @@ class StudentDetails {
     required this.noOfProjects,
   });
 }
+
+class GroupDetails {
+  String GroupID;
+  String GroupName;
+
+  GroupDetails({required this.GroupID, required this.GroupName});
+}
