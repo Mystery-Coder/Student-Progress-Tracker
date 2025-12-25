@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:student_progress_app/types.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,6 +28,12 @@ class _DetailsTabState extends State<DetailsTab>
   bool loaded = false;
   final spinkit = SpinKitChasingDots(color: Colors.red);
 
+  TextEditingController? grade10Controller;
+  TextEditingController? grade12Controller;
+  TextEditingController? hackathonsController;
+  TextEditingController? internshipsController;
+  TextEditingController? projectsController;
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +49,7 @@ class _DetailsTabState extends State<DetailsTab>
         'get_student_details_from_id',
         params: {'id_of_student': user?.id},
       );
-      print(res);
+      // print(res);
       setState(() {
         details = StudentDetails(
           USN: res[0]["USN"],
@@ -52,6 +59,21 @@ class _DetailsTabState extends State<DetailsTab>
           noOfInternships: res[0]["Number_Of_Internships"],
           noOfProjects: res[0]["No_of_Projects"],
         );
+
+        grade10Controller = TextEditingController(
+          text: details.SSLC.toString(),
+        );
+        grade12Controller = TextEditingController(text: details.PUC.toString());
+        internshipsController = TextEditingController(
+          text: details.noOfInternships.toString(),
+        );
+        hackathonsController = TextEditingController(
+          text: details.noOfHackathons.toString(),
+        );
+        projectsController = TextEditingController(
+          text: details.noOfProjects.toString(),
+        );
+
         loaded = true;
       });
     } catch (e) {
@@ -100,7 +122,148 @@ class _DetailsTabState extends State<DetailsTab>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            icon: Icon(Icons.edit_document),
+                            title: Text("Editing Details"),
+
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: "10th Percentage",
+                                  ),
+                                  controller: grade10Controller,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d*'),
+                                    ), // Only allows 0-9
+                                  ],
+                                ),
+
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: "12th Percentage",
+                                  ),
+                                  controller: grade12Controller,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d*'),
+                                    ), // Only allows 0-9
+                                  ],
+                                ),
+
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: "Projects",
+                                  ),
+                                  controller: projectsController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: "Hackathons",
+                                  ),
+                                  controller: hackathonsController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: "Internships",
+                                  ),
+                                  controller: internshipsController,
+
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  if (grade10Controller!.text.isEmpty ||
+                                      grade12Controller!.text.isEmpty ||
+                                      hackathonsController!.text.isEmpty ||
+                                      projectsController!.text.isEmpty ||
+                                      internshipsController!.text.isEmpty) {
+                                    return;
+                                  }
+                                  try {
+                                    await supabase
+                                        .from("STUDENT")
+                                        .update({
+                                          "SSLC": double.parse(
+                                            grade10Controller!.text,
+                                          ),
+                                          "PUC": double.parse(
+                                            grade12Controller!.text,
+                                          ),
+                                          "Number_Of_Internships": int.parse(
+                                            internshipsController!.text,
+                                          ),
+                                          "No_of_Hackathons": int.parse(
+                                            hackathonsController!.text,
+                                          ),
+                                          "No_of_Projects": int.parse(
+                                            projectsController!.text,
+                                          ),
+                                        })
+                                        .eq("USN", details.USN);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text("Saved!"),
+                                          duration: Duration(milliseconds: 400),
+                                        ),
+                                      );
+                                      loaded = false;
+                                      _getDetails();
+                                      Navigator.of(context).pop();
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text("$e"),
+                                          duration: Duration(milliseconds: 400),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Text("Save"),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                       icon: Icon(Icons.edit),
                       label: Text("Edit"),
                       style: ButtonStyle(
