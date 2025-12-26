@@ -247,6 +247,25 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
               );
               final Session? session = res.session;
 
+              if (session != null) {
+                var checkAdmin = await supabase.rpc(
+                  "check_admin",
+                  params: {"id_of_user": session.user.id},
+                );
+                if (checkAdmin) {
+                  supabase.auth.signOut();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Admin Not Allowed on Mobile"),
+                        duration: Duration(milliseconds: 800),
+                      ),
+                    );
+                  }
+                  return;
+                }
+              }
+
               if (session != null && context.mounted) {
                 Navigator.pushReplacementNamed(context, Tabs.routeName);
               }
