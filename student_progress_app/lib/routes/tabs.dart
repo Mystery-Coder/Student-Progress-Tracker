@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/skills.dart';
 import 'package:student_progress_app/types.dart';
+import 'package:student_progress_app/widgets/academics_tab.dart';
 import 'package:student_progress_app/widgets/details_tab.dart';
 import 'package:student_progress_app/widgets/groups_tab.dart';
 import 'package:student_progress_app/widgets/model_tab.dart';
@@ -35,7 +36,7 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
   initState() {
     super.initState();
     _getDetails();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -108,11 +109,12 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
         ),
         body: TabBarView(
           controller: _tabController,
-          children: [DetailsTab(), ModelTab(), GroupsTab()],
+          children: [AcademicsTab(), DetailsTab(), ModelTab(), GroupsTab()],
         ),
         bottomNavigationBar: TabBar(
           controller: _tabController,
           tabs: const [
+            Tab(icon: Icon(Icons.school_outlined)),
             Tab(icon: Icon(Icons.info)),
             Tab(icon: Icon(Icons.memory)),
             Tab(icon: Icon(Icons.group)),
