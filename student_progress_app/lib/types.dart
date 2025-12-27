@@ -24,3 +24,10 @@ class GroupDetails {
 
   GroupDetails({required this.GroupID, required this.GroupName});
 }
+
+class SkillsDetails {
+  String SkillName;
+  double Rating;
+
+  SkillsDetails({required this.SkillName, required this.Rating});
+}

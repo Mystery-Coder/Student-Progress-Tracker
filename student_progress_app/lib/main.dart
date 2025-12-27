@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_progress_app/routes/auth_check.dart';
 import 'package:student_progress_app/routes/login.dart';
+import 'package:student_progress_app/routes/skills.dart';
 import 'package:student_progress_app/routes/tabs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,6 +35,10 @@ class AppRoot extends StatelessWidget {
           case Tabs.routeName:
             {
               return MaterialPageRoute(builder: (context) => Tabs());
+            }
+          case Skills.routeName:
+            {
+              return MaterialPageRoute(builder: (context) => Skills());
             }
           default:
             {
