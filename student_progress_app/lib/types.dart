@@ -31,3 +31,21 @@ class SkillsDetails {
 
   SkillsDetails({required this.SkillName, required this.Rating});
 }
+
+class AcademicDetails {
+  String CourseCode;
+  String CourseName;
+  int Semester;
+  String Grade; //A+,A,B+,..
+  int CreditsEarned;
+  int Year;
+
+  AcademicDetails({
+    required this.CourseCode,
+    required this.CourseName,
+    required this.Semester,
+    required this.Grade,
+    required this.CreditsEarned,
+    required this.Year,
+  });
+}
