@@ -15,6 +15,7 @@ class _AcademicsTabState extends State<AcademicsTab>
     with AutomaticKeepAliveClientMixin {
   final supabase = Supabase.instance.client;
   late final user = supabase.auth.currentUser;
+
   final spinkit = SpinKitFadingFour(color: Colors.indigoAccent);
   final semesterColors = {
     1: Colors.blue.shade200,
@@ -27,8 +28,20 @@ class _AcademicsTabState extends State<AcademicsTab>
     // 8: Colors.purple.shade200,
   };
 
+  final gradeMapping = {
+    "O": 10,
+    "A+": 9,
+    "A": 8,
+    "B+": 7,
+    "C+": 6,
+    "C": 5,
+    "P": 4,
+  };
+
   bool loaded = false;
   List<AcademicDetails> academicDetails = [];
+  // ignore: non_constant_identifier_names
+  double CGPA = 0.0;
 
   @override
   void initState() {
@@ -61,6 +74,18 @@ class _AcademicsTabState extends State<AcademicsTab>
           }).toList();
           academicDetails.sort((a, b) => a.Semester.compareTo(b.Semester));
         }
+
+        int totalCredits = 0;
+        int totalGradePoints = 0;
+        for (var course in academicDetails) {
+          totalCredits += course.CreditsEarned;
+          totalGradePoints +=
+              gradeMapping[course.Grade]! * course.CreditsEarned;
+        }
+
+        CGPA = double.parse(
+          (totalGradePoints / totalCredits).toStringAsFixed(2),
+        );
         loaded = true;
       });
     } catch (e) {
@@ -164,7 +189,7 @@ class _AcademicsTabState extends State<AcademicsTab>
 
                   // Insert into database
                   await supabase.from("ACADEMIC_DETAILS").insert({
-                    "AD_USSN": detailsRes[0]['USN'],
+                    "AD_USN": detailsRes[0]['USN'],
                     "Course_Code": courseCodeController.text,
                     "Course_Name": courseNameController.text,
                     "Semester": int.parse(semesterController.text),
@@ -252,6 +277,16 @@ class _AcademicsTabState extends State<AcademicsTab>
                           onPressed: () => _showAcademicDetailDialog(context),
                           icon: Icon(Icons.add),
                           label: Text("Add Course"),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "CGPA: $CGPA",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 23,
+                          ),
                         ),
                       ),
                       Expanded(
