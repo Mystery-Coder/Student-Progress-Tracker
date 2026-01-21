@@ -1,3 +1,11 @@
 pandas
 scikit-learn
-FastAPI
+fastapi
+uvicorn
+pandas
+numpy
+scikit-learn
+joblib
+supabase
+python-dotenv
+pydantic==2.5.0

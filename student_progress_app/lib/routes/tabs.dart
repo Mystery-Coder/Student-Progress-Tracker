@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/skills.dart';
-import 'package:student_progress_app/types.dart';
+// import 'package:student_progress_app/types.dart';
 import 'package:student_progress_app/widgets/academics_tab.dart';
 import 'package:student_progress_app/widgets/details_tab.dart';
 import 'package:student_progress_app/widgets/groups_tab.dart';
@@ -23,14 +23,14 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
   late final user = session?.user;
   // ignore: non_constant_identifier_names
   String USN = "";
-  StudentDetails studentDetails = StudentDetails(
-    USN: "",
-    PUC: 0,
-    SSLC: 0,
-    noOfHackathons: 0,
-    noOfInternships: 0,
-    noOfProjects: 0,
-  );
+  // StudentDetails studentDetails = StudentDetails(
+  //   USN: "",
+  //   PUC: 0,
+  //   SSLC: 0,
+  //   noOfHackathons: 0,
+  //   noOfInternships: 0,
+  //   noOfProjects: 0,
+  // );
 
   @override
   initState() {
