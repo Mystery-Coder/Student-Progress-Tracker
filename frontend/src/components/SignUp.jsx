@@ -1,269 +1,429 @@
 import { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
+import {
+  TextField,
+  Button,
+  Alert,
+  MenuItem,
+  Typography,
+  Box,
+  FormControl,
+  Select,
+} from "@mui/material";
 import { supabase } from "../SupabaseClient";
 
 export default function SignUp({ toggleView }) {
-	const [formData, setFormData] = useState({
-		name: "",
-		usn: "",
-		email: "",
-		password: "",
-		motherName: "",
-		fatherName: "",
-		dob: "",
-		phone: "",
-		gender: "Male",
-		isAdmin: false,
-		adminId: "",
-	});
-	const [loading, setLoading] = useState(false);
-	const [message, setMessage] = useState({ type: "", text: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "student",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
 
-	const handleChange = (field, value) => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
-	};
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-	const handleSignUp = async (e) => {
-		e.preventDefault();
-		setLoading(true);
-		setMessage({ type: "", text: "" });
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ type: "", text: "" });
 
-		// Validate fields based on user type
-		if (formData.isAdmin) {
-			if (
-				!formData.name ||
-				!formData.email ||
-				!formData.password ||
-				!formData.adminId
-			) {
-				setMessage({ type: "error", text: "Fill all fields" });
-				setLoading(false);
-				return;
-			}
-		} else {
-			if (
-				!formData.name ||
-				!formData.usn ||
-				!formData.email ||
-				!formData.password ||
-				!formData.phone ||
-				!formData.motherName ||
-				!formData.fatherName ||
-				!formData.dob
-			) {
-				setMessage({ type: "error", text: "Fill all fields" });
-				setLoading(false);
-				return;
-			}
-		}
+    if (!formData.email || !formData.password || !formData.name || !formData.role) {
+      setMessage({ type: "error", text: "Fill all fields" });
+      setLoading(false);
+      return;
+    }
 
-		try {
-			// Sign up user
-			const { data, error } = await supabase.auth.signUp({
-				email: formData.email,
-				password: formData.password,
-			});
+    try {
+      // 1️⃣ Create auth user
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
 
-			if (error) throw error;
+      if (error) throw error;
 
-			const user = data.user;
-			const session = data.session;
+      const user = data.user;
+      if (!user) throw new Error("Failed to create user account");
 
-			if (session) {
-				// Split name into first and last name
-				const nameArr = formData.name.trim().split(" ");
-				const firstName = nameArr[0];
-				const lastName = nameArr.slice(1).join(" ") || "";
+      // Split name
+      const nameArr = formData.name.trim().split(" ");
+      const firstName = nameArr[0];
+      const lastName = nameArr.slice(1).join(" ") || "";
 
-				// Insert into appropriate table
-				if (formData.isAdmin) {
-					await supabase.from("Admin_Details").insert({
-						user_id: user?.id,
-						Admin_ID: formData.adminId,
-						Admin_Name: formData.name,
-					});
-				} else {
-					await supabase.from("STUDENT").insert({
-						user_id: user?.id,
-						USN: formData.usn,
-						First_Name: firstName,
-						Last_Name: lastName,
-						Date_born: formData.dob,
-						Sex: formData.gender,
-						Father_Name: formData.fatherName,
-						Mother_Name: formData.motherName,
-						Phone_No: formData.phone,
-					});
-				}
+      // 2️⃣ Create role-specific record using RPC
+      if (formData.role === "teacher") {
+        const { data: created, error: rpcError } = await supabase.rpc(
+          "create_teacher_account",
+          {
+            p_user_id: user.id,
+            p_admin_name: formData.name,
+          }
+        );
 
-				setMessage({
-					type: "success",
-					text: "Signed Up! Login with Email",
-				});
-				setTimeout(() => toggleView(), 1000);
-			}
-		} catch (error) {
-			setMessage({ type: "error", text: error.message });
-		}
-		setLoading(false);
-	};
+        if (rpcError) {
+          throw new Error(`Failed to create teacher account: ${rpcError.message}`);
+        }
 
-	return (
-		<form onSubmit={handleSignUp}>
-			{message.text && (
-				<Alert severity={message.type} sx={{ mb: 2 }}>
-					{message.text}
-				</Alert>
-			)}
+        if (!created) {
+          throw new Error("Failed to create teacher account");
+        }
+      } else {
+        const { data: created, error: rpcError } = await supabase.rpc(
+          "create_student_account",
+          {
+            p_user_id: user.id,
+            p_first_name: firstName,
+            p_last_name: lastName,
+          }
+        );
 
-			<TextField
-				label="Full Name"
-				fullWidth
-				required
-				value={formData.name}
-				onChange={(e) => handleChange("name", e.target.value)}
-				sx={{ mb: 2 }}
-			/>
+        if (rpcError) {
+          throw new Error(`Failed to create student account: ${rpcError.message}`);
+        }
 
-			<TextField
-				label="Email"
-				type="email"
-				fullWidth
-				required
-				value={formData.email}
-				onChange={(e) => handleChange("email", e.target.value)}
-				sx={{ mb: 2 }}
-			/>
+        if (!created) {
+          throw new Error("Failed to create student account");
+        }
+      }
 
-			<TextField
-				label="Password"
-				type="password"
-				fullWidth
-				required
-				value={formData.password}
-				onChange={(e) => handleChange("password", e.target.value)}
-				helperText="Minimum 6 characters required"
-				sx={{ mb: 2 }}
-			/>
+      // 3️⃣ Success message
+      setMessage({
+        type: "success",
+        text: data.session
+          ? "Signed Up! Login with Email"
+          : "Signed Up! Please check your email to confirm your account, then login.",
+      });
 
-			<FormControlLabel
-				control={
-					<Checkbox
-						checked={formData.isAdmin}
-						onChange={(e) =>
-							handleChange("isAdmin", e.target.checked)
-						}
-					/>
-				}
-				label="Sign up as Admin"
-				sx={{ mb: 2 }}
-			/>
+      setTimeout(() => toggleView(), 2000);
+    } catch (error) {
+      setMessage({ type: "error", text: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-			{formData.isAdmin ? (
-				// Admin fields
-				<TextField
-					label="Admin ID"
-					fullWidth
-					required
-					value={formData.adminId}
-					onChange={(e) => handleChange("adminId", e.target.value)}
-					sx={{ mb: 2 }}
-				/>
-			) : (
-				// Student fields
-				<>
-					<TextField
-						label="USN"
-						fullWidth
-						required
-						value={formData.usn}
-						onChange={(e) => handleChange("usn", e.target.value)}
-						sx={{ mb: 2 }}
-					/>
+  return (
+    <Box component="form" onSubmit={handleSignUp} sx={{ width: "100%" }}>
+      {message.text && (
+        <Alert
+          severity={message.type}
+          sx={{
+            mb: 3,
+            borderRadius: 2,
+            backgroundColor:
+              message.type === "error"
+                ? "rgba(244, 67, 54, 0.15)"
+                : "rgba(76, 175, 80, 0.15)",
+            color: "white",
+            border: "1px solid",
+            borderColor:
+              message.type === "error"
+                ? "rgba(244, 67, 54, 0.4)"
+                : "rgba(76, 175, 80, 0.4)",
+            "& .MuiAlert-icon": {
+              color: message.type === "error" ? "#ff6b6b" : "#51cf66",
+            },
+          }}
+        >
+          {message.text}
+        </Alert>
+      )}
 
-					<TextField
-						label="Mother Name"
-						fullWidth
-						required
-						value={formData.motherName}
-						onChange={(e) =>
-							handleChange("motherName", e.target.value)
-						}
-						sx={{ mb: 2 }}
-					/>
+      {/* Name Field */}
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "rgba(255, 255, 255, 0.9)",
+            mb: 1,
+            fontWeight: 500,
+            fontSize: "0.95rem",
+          }}
+        >
+          Name
+        </Typography>
+        <TextField
+          fullWidth
+          required
+          value={formData.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+          placeholder="Enter your full name"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              borderRadius: 2,
+              "& fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.25)",
+                borderWidth: "1px",
+              },
+              "&:hover fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#667eea",
+                borderWidth: "2px",
+              },
+              "& input": {
+                color: "white",
+                padding: "14px 16px",
+                fontSize: "0.95rem",
+                "&::placeholder": {
+                  color: "rgba(255, 255, 255, 0.4)",
+                  opacity: 1,
+                },
+              },
+            },
+          }}
+        />
+      </Box>
 
-					<TextField
-						label="Father Name"
-						fullWidth
-						required
-						value={formData.fatherName}
-						onChange={(e) =>
-							handleChange("fatherName", e.target.value)
-						}
-						sx={{ mb: 2 }}
-					/>
+      {/* Email Field */}
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "rgba(255, 255, 255, 0.9)",
+            mb: 1,
+            fontWeight: 500,
+            fontSize: "0.95rem",
+          }}
+        >
+          Email
+        </Typography>
+        <TextField
+          type="email"
+          fullWidth
+          required
+          value={formData.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+          placeholder="Enter your email"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              borderRadius: 2,
+              "& fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.25)",
+                borderWidth: "1px",
+              },
+              "&:hover fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#667eea",
+                borderWidth: "2px",
+              },
+              "& input": {
+                color: "white",
+                padding: "14px 16px",
+                fontSize: "0.95rem",
+                "&::placeholder": {
+                  color: "rgba(255, 255, 255, 0.4)",
+                  opacity: 1,
+                },
+              },
+            },
+          }}
+        />
+      </Box>
 
-					<TextField
-						label="Date of Birth"
-						type="date"
-						fullWidth
-						required
-						value={formData.dob}
-						onChange={(e) => handleChange("dob", e.target.value)}
-						InputLabelProps={{ shrink: true }}
-						sx={{ mb: 2 }}
-					/>
+      {/* Password Field */}
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "rgba(255, 255, 255, 0.9)",
+            mb: 1,
+            fontWeight: 500,
+            fontSize: "0.95rem",
+          }}
+        >
+          Password
+        </Typography>
+        <TextField
+          type="password"
+          fullWidth
+          required
+          value={formData.password}
+          onChange={(e) => handleChange("password", e.target.value)}
+          placeholder="Create a password"
+          helperText="Minimum 6 characters required"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              borderRadius: 2,
+              "& fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.25)",
+                borderWidth: "1px",
+              },
+              "&:hover fieldset": {
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#667eea",
+                borderWidth: "2px",
+              },
+              "& input": {
+                color: "white",
+                padding: "14px 16px",
+                fontSize: "0.95rem",
+                "&::placeholder": {
+                  color: "rgba(255, 255, 255, 0.4)",
+                  opacity: 1,
+                },
+              },
+            },
+            "& .MuiFormHelperText-root": {
+              color: "rgba(255, 255, 255, 0.5)",
+              marginLeft: 0,
+              mt: 1,
+              fontSize: "0.8rem",
+            },
+          }}
+        />
+      </Box>
 
-					<TextField
-						label="Phone"
-						type="tel"
-						fullWidth
-						required
-						value={formData.phone}
-						onChange={(e) => handleChange("phone", e.target.value)}
-						sx={{ mb: 2 }}
-					/>
+      {/* Role Selector */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "rgba(255, 255, 255, 0.9)",
+            mb: 1,
+            fontWeight: 500,
+            fontSize: "0.95rem",
+          }}
+        >
+          Sign up as
+        </Typography>
+        <FormControl fullWidth>
+          <Select
+            value={formData.role}
+            onChange={(e) => handleChange("role", e.target.value)}
+            required
+            sx={{
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(255, 255, 255, 0.25)",
+                borderWidth: "1px",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#667eea",
+                borderWidth: "2px",
+              },
+              "& .MuiSelect-select": {
+                color: "white",
+                padding: "14px 16px",
+                fontSize: "0.95rem",
+              },
+              "& .MuiSvgIcon-root": {
+                color: "rgba(255, 255, 255, 0.6)",
+              },
+            }}
+          >
+            <MenuItem
+              value="student"
+              sx={{
+                backgroundColor: "#1a1a2e",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "rgba(102, 126, 234, 0.2)",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "rgba(102, 126, 234, 0.3)",
+                  "&:hover": {
+                    backgroundColor: "rgba(102, 126, 234, 0.4)",
+                  },
+                },
+              }}
+            >
+              Student
+            </MenuItem>
+            <MenuItem
+              value="teacher"
+              sx={{
+                backgroundColor: "#1a1a2e",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "rgba(102, 126, 234, 0.2)",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "rgba(102, 126, 234, 0.3)",
+                  "&:hover": {
+                    backgroundColor: "rgba(102, 126, 234, 0.4)",
+                  },
+                },
+              }}
+            >
+              Teacher
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
-					<TextField
-						select
-						label="Gender"
-						fullWidth
-						value={formData.gender}
-						onChange={(e) => handleChange("gender", e.target.value)}
-						sx={{ mb: 2 }}
-					>
-						<MenuItem value="Male">Male</MenuItem>
-						<MenuItem value="Female">Female</MenuItem>
-					</TextField>
-				</>
-			)}
+      {/* Sign Up Button */}
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        size="large"
+        disabled={loading}
+        sx={{
+          mb: 3,
+          py: 1.5,
+          background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
+          borderRadius: 2,
+          fontWeight: 600,
+          fontSize: "1rem",
+          textTransform: "none",
+          boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
+          "&:hover": {
+            background: "linear-gradient(90deg, #5a6fd8 0%, #6a3d8f 100%)",
+            boxShadow: "0 6px 20px rgba(102, 126, 234, 0.6)",
+            transform: "translateY(-1px)",
+          },
+          "&:active": {
+            transform: "translateY(0)",
+          },
+          "&.Mui-disabled": {
+            background: "rgba(255, 255, 255, 0.1)",
+            color: "rgba(255, 255, 255, 0.3)",
+          },
+        }}
+      >
+        {loading ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderTopColor: "white",
+                animation: "spin 1s linear infinite",
+              }}
+            />
+            Creating Account...
+          </Box>
+        ) : (
+          "Sign Up"
+        )}
+      </Button>
 
-			<Button
-				type="submit"
-				variant="contained"
-				fullWidth
-				size="large"
-				disabled={loading}
-				sx={{ mb: 2 }}
-			>
-				{loading ? "Loading..." : "Sign Up"}
-			</Button>
-
-			<Typography
-				variant="body2"
-				align="center"
-				color="text.secondary"
-				sx={{ cursor: "pointer" }}
-				onClick={toggleView}
-			>
-				Already have an account? Sign In
-			</Typography>
-		</form>
-	);
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+    </Box>
+  );
 }

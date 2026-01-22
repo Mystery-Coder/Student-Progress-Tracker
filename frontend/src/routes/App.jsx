@@ -1,51 +1,92 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import { supabase } from "../SupabaseClient";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+// App.jsx - Updated for dark theme
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../SupabaseClient';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
-export default function AuthPage() {
-	const navigate = useNavigate();
+export default function App() {
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
-	async function authCheck() {
-		const { data, error } = await supabase.auth.getUser();
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Get current auth session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          navigate('/login');
+          return;
+        }
+        
+        if (session) {
+          // User is authenticated
+          const userRole = localStorage.getItem('userRole');
+          
+          if (userRole === 'student') {
+            navigate('/student-portal');
+          } else if (userRole === 'teacher') {
+            navigate('/teacher-blank');
+          } else {
+            // Role not set, go to login
+            console.log('No userRole found, redirecting to login');
+            navigate('/login');
+          }
+        } else {
+          // No session, go to login
+          console.log('No session found, redirecting to login');
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/login');
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
 
-		const user = data?.user;
+    // Small delay to ensure supabase is initialized
+    setTimeout(() => {
+      checkAuth();
+    }, 100);
+  }, [navigate]);
 
-		if (error) {
-			console.log(error);
-			return;
-		}
+  // Show loading while checking auth
+  if (checkingAuth) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <CircularProgress 
+          size={60} 
+          sx={{ 
+            color: '#667eea',
+            '& .MuiCircularProgress-circle': {
+              strokeLinecap: 'round',
+            }
+          }} 
+        />
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontWeight: 300,
+          }}
+        >
+          Loading...
+        </Typography>
+      </Box>
+    );
+  }
 
-		if (user) {
-			navigate("/tabs");
-		} else {
-			navigate("/login");
-		}
-	}
-
-	useEffect(() => {
-		authCheck();
-	}, []);
-
-	return (
-		<Box sx={{ flexGrow: 1, minHeight: "100vh", bgcolor: "#f5f5f5" }}>
-			<AppBar position="static">
-				<Toolbar>
-					<Typography
-						variant="h6"
-						sx={{
-							flexGrow: 1,
-							textAlign: "center",
-							fontWeight: "bold",
-						}}
-					>
-						Student Progress Tracker
-					</Typography>
-				</Toolbar>
-			</AppBar>
-		</Box>
-	);
+  return null;
 }
