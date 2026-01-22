@@ -2,10 +2,9 @@ pandas
 scikit-learn
 fastapi
 uvicorn
-pandas
 numpy
-scikit-learn
 joblib
 supabase
 python-dotenv
 pydantic==2.5.0
+motor==3.3.2
