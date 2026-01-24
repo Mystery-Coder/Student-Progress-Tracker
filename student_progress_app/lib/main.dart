@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_progress_app/routes/auth_check.dart';
 import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/skills.dart';
@@ -10,7 +11,7 @@ Future<void> main() async {
     url: 'https://ztagrfwdunxdrnvledax.supabase.co',
     anonKey: 'sb_publishable_IjvDDDK4jlzu6sKnGFLauQ_nWQHFCTn',
   );
-  runApp(AppRoot());
+  runApp(const ProviderScope(child: AppRoot()));
 }
 
 class AppRoot extends StatelessWidget {

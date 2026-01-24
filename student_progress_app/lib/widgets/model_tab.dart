@@ -1,140 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:convert'; // Required for JSON decoding
-import 'package:http/http.dart' as http;
+import 'package:student_progress_app/providers/model_providers.dart';
+import 'package:student_progress_app/providers/student_providers.dart';
 
-class ModelTab extends StatefulWidget {
+class ModelTab extends ConsumerWidget {
   const ModelTab({super.key});
 
   @override
-  State<ModelTab> createState() => _ModelTabState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final usnAsync = ref.watch(usnProvider);
+    final spinkit = const SpinKitDualRing(
+      color: Colors.deepOrangeAccent,
+      size: 40,
+    );
+
+    return Center(
+      child: usnAsync.when(
+        loading: () => spinkit,
+        error: (error, stack) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text('Error: ${error.toString()}'),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => ref.refresh(usnProvider),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+        data: (usn) => _ModelContent(usn: usn),
+      ),
+    );
+  }
 }
 
-class _ModelTabState extends State<ModelTab>
-    with AutomaticKeepAliveClientMixin {
-  final supabase = Supabase.instance.client;
-  late final user = supabase.auth.currentUser;
+class _ModelContent extends ConsumerWidget {
+  final String usn;
 
-  final String modelURL = 'http://10.0.2.2:8000'; // For AVD
-  // final String modelURL = 'http://server-ip:port'; // For Physical Android Device
-  final spinkit = SpinKitDualRing(color: Colors.deepOrangeAccent, size: 40);
-
-  // ignore: non_constant_identifier_names
-  String USN = '';
-  bool loaded = false;
-  Map<String, dynamic>? predictionData;
-  bool isLoadingPrediction = false;
+  const _ModelContent({required this.usn});
 
   @override
-  void initState() {
-    super.initState();
-    _getUSN();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final predictionAsync = ref.watch(modelPredictionProvider(usn));
+    final spinkit = const SpinKitDualRing(
+      color: Colors.deepOrangeAccent,
+      size: 40,
+    );
 
-  @override
-  bool get wantKeepAlive => true;
-
-  void _getModelOutput() async {
-    setState(() {
-      isLoadingPrediction = true;
-    });
-
-    try {
-      final res = await http.get(Uri.parse('$modelURL/predict/$USN'));
-      final data = await jsonDecode(res.body);
-
-      setState(() {
-        predictionData = data;
-        isLoadingPrediction = false;
-      });
-    } catch (e) {
-      print("Error getting model output, $e");
-      setState(() {
-        isLoadingPrediction = false;
-      });
-    }
-  }
-
-  void _getUSN() async {
-    try {
-      final data = await supabase
-          .from("STUDENT")
-          .select("USN")
-          .eq("user_id", user!.id);
-
-      setState(() {
-        USN = data[0]["USN"];
-        loaded = true;
-      });
-    } catch (e) {
-      print("details error: $e");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return Center(
-      child: loaded
-          ? (predictionData == null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.psychology,
-                        size: 80,
-                        color: Colors.deepOrangeAccent,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Get Your Placement Prediction',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton.icon(
-                        onPressed: isLoadingPrediction ? null : _getModelOutput,
-                        icon: isLoadingPrediction
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.analytics),
-                        label: Text(
-                          isLoadingPrediction
-                              ? 'Analyzing...'
-                              : 'Get Prediction',
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 16,
-                          ),
-                          backgroundColor: Colors.deepOrangeAccent,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  )
-                : _buildPredictionResult())
-          : spinkit,
+    return predictionAsync.when(
+      loading: () => spinkit,
+      error: (error, stack) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.psychology,
+            size: 80,
+            color: Colors.deepOrangeAccent,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Get Your Placement Prediction',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton.icon(
+            onPressed: () => ref.refresh(modelPredictionProvider(usn)),
+            icon: const Icon(Icons.analytics),
+            label: const Text('Get Prediction'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              backgroundColor: Colors.deepOrangeAccent,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          ...[
+            const SizedBox(height: 20),
+            Text(
+              'Error: ${error.toString()}',
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+      data: (predictionData) =>
+          _buildPredictionResult(context, ref, predictionData, usn),
     );
   }
 
-  Widget _buildPredictionResult() {
+  Widget _buildPredictionResult(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> predictionData,
+    String usn,
+  ) {
     final score =
-        (predictionData!['placement_score'] ?? predictionData!['confidence'])
+        (predictionData['placement_score'] ?? predictionData['confidence'])
             .toDouble();
-    final prediction = predictionData!['prediction'];
-    final features = predictionData!['features'] as Map<String, dynamic>;
-    final recommendation = predictionData!['recommendation'] as String;
+    final prediction = predictionData['prediction'];
+    final features = predictionData['features'] as Map<String, dynamic>;
+    final recommendation = predictionData['recommendation'] as String;
     final isPlaced = prediction.toString().toLowerCase() == 'placed';
 
     return SingleChildScrollView(
@@ -149,14 +118,14 @@ class _ModelTabState extends State<ModelTab>
               child: Column(
                 children: [
                   Text(
-                    predictionData!['name'] ?? 'Student',
+                    predictionData['name'] ?? 'Student',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    predictionData!['usn'] ?? USN,
+                    predictionData['usn'] ?? usn,
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                 ],
@@ -249,7 +218,7 @@ class _ModelTabState extends State<ModelTab>
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _buildFeatureGrid(features),
+                  _buildFeatureGrid(context, features),
                 ],
               ),
             ),
@@ -288,7 +257,7 @@ class _ModelTabState extends State<ModelTab>
 
           // Refresh button
           ElevatedButton.icon(
-            onPressed: isLoadingPrediction ? null : _getModelOutput,
+            onPressed: () => ref.refresh(modelPredictionProvider(usn)),
             icon: const Icon(Icons.refresh),
             label: const Text('Refresh Prediction'),
             style: ElevatedButton.styleFrom(
@@ -301,13 +270,15 @@ class _ModelTabState extends State<ModelTab>
     );
   }
 
-  Widget _buildFeatureGrid(Map<String, dynamic> features) {
+  Widget _buildFeatureGrid(
+    BuildContext context,
+    Map<String, dynamic> features,
+  ) {
     final items = features.entries.map((e) {
       String label = e.key
           .replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match.group(0)}')
           .trim();
-
-      return _buildFeatureItem(label, e.value.toString());
+      return _buildFeatureItem(context, label, e.value.toString());
     }).toList();
 
     return Center(
@@ -320,7 +291,7 @@ class _ModelTabState extends State<ModelTab>
     );
   }
 
-  Widget _buildFeatureItem(String label, String value) {
+  Widget _buildFeatureItem(BuildContext context, String label, String value) {
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth = (screenWidth - 80) / 2;
 
