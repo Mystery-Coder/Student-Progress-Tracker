@@ -28,7 +28,7 @@ class HealthResponse(BaseModel):
 
 
 @asynccontextmanager
-async def startup():
+async def startup(app: FastAPI):
     """Initialize database and ML model on startup"""
     global db_client, ml_predictor
     
@@ -53,6 +53,9 @@ async def startup():
         ml_predictor = PlacementPredictor(model_path)
     except Exception as e:
         print(f"Model loading failed: {e}")
+
+
+    yield
     
 
 app = FastAPI(
