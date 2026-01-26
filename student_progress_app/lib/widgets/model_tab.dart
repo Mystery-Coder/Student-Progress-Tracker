@@ -45,7 +45,7 @@ class _ModelContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final predictionAsync = ref.watch(modelPredictionProvider(usn));
+    final predictionAsync = ref.watch(modelPredictionProvider);
     final spinkit = const SpinKitDualRing(
       color: Colors.deepOrangeAccent,
       size: 40,
@@ -68,7 +68,7 @@ class _ModelContent extends ConsumerWidget {
           ),
           const SizedBox(height: 30),
           ElevatedButton.icon(
-            onPressed: () => ref.refresh(modelPredictionProvider(usn)),
+            onPressed: () => ref.refresh(modelPredictionProvider),
             icon: const Icon(Icons.analytics),
             label: const Text('Get Prediction'),
             style: ElevatedButton.styleFrom(
@@ -257,7 +257,7 @@ class _ModelContent extends ConsumerWidget {
 
           // Refresh button
           ElevatedButton.icon(
-            onPressed: () => ref.refresh(modelPredictionProvider(usn)),
+            onPressed: () => ref.refresh(modelPredictionProvider),
             icon: const Icon(Icons.refresh),
             label: const Text('Refresh Prediction'),
             style: ElevatedButton.styleFrom(

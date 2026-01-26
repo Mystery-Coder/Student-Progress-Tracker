@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:student_progress_app/providers/academics_providers.dart';
 import 'package:student_progress_app/providers/auth_providers.dart';
+import 'package:student_progress_app/providers/student_providers.dart';
 
 class AcademicsTab extends ConsumerWidget {
   const AcademicsTab({super.key});
@@ -222,13 +223,11 @@ class AcademicsTab extends ConsumerWidget {
                   }
 
                   final supabase = ref.read(supabaseProvider);
-                  final detailsRes = await supabase.rpc(
-                    'get_student_details_from_id',
-                    params: {'id_of_student': supabase.auth.currentUser?.id},
-                  );
+                  // ignore: non_constant_identifier_names
+                  final USN = ref.read(usnProvider);
 
                   await supabase.from("ACADEMIC_DETAILS").insert({
-                    "AD_USN": detailsRes[0]['USN'],
+                    "AD_USN": USN,
                     "Course_Code": courseCodeController.text,
                     "Course_Name": courseNameController.text,
                     "Semester": int.parse(semesterController.text),
