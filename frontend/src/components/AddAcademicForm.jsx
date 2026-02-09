@@ -2023,7 +2023,7 @@ export default function AddAcademicForm({ student }) {
 								variant="h6"
 								sx={{
 									color: "rgba(255, 255, 255, 0.7)",
-									gutterBottom,
+									gutterBottom: "true",
 								}}
 							>
 								No skills added yet
