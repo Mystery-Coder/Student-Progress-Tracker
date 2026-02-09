@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import json
 from motor.motor_asyncio import AsyncIOMotorClient
 from database.supabase_client import SupabaseClient
 from ml.predictor import PlacementPredictor
@@ -303,6 +304,7 @@ async def get_student_co_marks(student_usn: str, group_id: str):
         raise HTTPException(status_code=500, detail="MongoDB not connected")
     
     try:
+        print("here")
         collection = mongo_db.comarks
         marks = await collection.find_one({
             "student_usn": student_usn,
@@ -315,8 +317,8 @@ async def get_student_co_marks(student_usn: str, group_id: str):
                 detail="No marks found for this student"
             )
         
-        # Convert ObjectId to string
-        marks["_id"] = str(marks["_id"])
+        # Convert ObjectId and other non-serializable types to string
+        marks = json.loads(json.dumps(marks, default=str))
         
         return COMarksResponse(
             success=True,
@@ -341,9 +343,9 @@ async def get_group_co_marks(group_id: str):
         cursor = collection.find({"group_id": group_id})
         all_marks = await cursor.to_list(length=None)
         
-        # Convert ObjectId to string for all documents
-        for marks in all_marks:
-            marks["_id"] = str(marks["_id"])
+        # Convert each document to serializable format
+        for i, marks in enumerate(all_marks):
+            all_marks[i] = json.loads(json.dumps(marks, default=str))
         
         return COMarksResponse(
             success=True,
