@@ -16,7 +16,7 @@ class _ModelTabState extends State<ModelTab>
   final supabase = Supabase.instance.client;
   late final user = supabase.auth.currentUser;
 
-  final String modelURL = 'http://10.0.2.2:8000'; // For AVD
+  final String modelURL = 'http://10.0.2.2:5000'; // For AVD
   // final String modelURL = 'http://server-ip:port'; // For Physical Android Device
   final spinkit = SpinKitDualRing(color: Colors.deepOrangeAccent, size: 40);
 
