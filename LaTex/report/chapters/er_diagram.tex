@@ -1,0 +1,74 @@
+% ============================================================
+% CHAPTER 3: ENTITY RELATIONSHIP DIAGRAM
+% ============================================================
+
+\chapter{Entity Relationship Diagram}
+
+% ------------------------------------------------------------
+\section{Preamble}
+% ------------------------------------------------------------
+
+An Entity Relationship (ER) diagram is a conceptual model used to represent the structure of a database system. It visually describes the entities involved in the system, their attributes, and the relationships among them. The ER diagram serves as a blueprint for designing the relational schema and helps in understanding data flow, dependencies, and constraints before actual database implementation.
+
+For the Crypto Opinion Extraction and Question Answering System, the ER diagram is designed to efficiently model Reddit-based cryptocurrency discussions. The diagram captures core entities such as users, posts, comments, and subreddits, along with their relationships. This structured representation ensures data consistency, avoids redundancy, and supports efficient querying and analysis.
+
+The ER diagram for the proposed system represents the logical structure of the database by identifying key entities, their attributes, and the relationships between them. It illustrates how Reddit users interact with posts and comments within different subreddits related to cryptocurrencies. The diagram also distinguishes between historical data and live data to support scalability and real-time analysis.
+
+% ------------------------------------------------------------
+\section{ER Diagram}
+% ------------------------------------------------------------
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig3_1.png}
+    \caption{ER Diagram}
+    \label{fig:er_diagram}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Diagram Description}
+% ------------------------------------------------------------
+
+The main entities identified in the ER diagram are described as follows:
+
+% ............................................................
+\subsection{User}
+% ............................................................
+
+The User entity represents Reddit users who create posts and comments. Attributes include User\_ID (primary key), Username, and other relevant user details. Each user can create multiple posts and comments.
+
+% ............................................................
+\subsection{Subreddit}
+% ............................................................
+
+The Subreddit entity represents cryptocurrency-related discussion forums on Reddit. Attributes include Subreddit\_ID (primary key), Subreddit\_Name, and Description. Each subreddit can contain multiple posts.
+
+% ............................................................
+\subsection{Post}
+% ............................................................
+
+The Post entity represents individual Reddit posts related to cryptocurrencies. Attributes include Post\_ID (primary key), Title, Content, Timestamp, and Score. Each post is created by a single user and belongs to one subreddit. A post can have multiple comments.
+
+% ............................................................
+\subsection{Live\_Post}
+% ............................................................
+
+The Live\_Post entity stores real-time or recently collected posts that may not yet be fully processed. This entity supports scalability and real-time data ingestion. Attributes include Live\_Post\_ID and content-related fields.
+
+% ............................................................
+\subsection{Live\_Comment}
+% ............................................................
+
+The Live\_Comment entity represents real-time comments associated with live posts. It enables flexible storage of rapidly changing data using NoSQL techniques.
+
+% ............................................................
+\subsection{Relationships}
+% ............................................................
+
+\begin{itemize}
+    \item A User creates a Post (one-to-many relationship).
+    \item A User writes a Live\_Comment (one-to-many relationship).
+    \item A Subreddit contains multiple Posts (one-to-many relationship).
+    \item A Post has multiple Comments (one-to-many relationship).
+    \item Live Posts and Live Comments are associated with their respective users and subreddits for real-time data handling.
+\end{itemize}

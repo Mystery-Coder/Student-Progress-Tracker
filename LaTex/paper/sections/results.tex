@@ -1,0 +1,83 @@
+% ============================================================
+% SECTION: RESULTS AND DISCUSSION
+% ============================================================
+
+\section{Results and Discussion}
+
+This section discusses the results of the explainable AI--based financial decision-support system, evaluating model performance, explainability, and dashboard usability in loan approval, property pricing, and stock forecasting.
+
+% ------------------------------------------------------------
+\subsection{Web-Based Dashboard Interface}
+% ------------------------------------------------------------
+
+The system features a user-friendly web-based dashboard with modules for loan approval, property price estimation, and stock forecasting. Users enter data through input forms and view real-time predictions with explainable insights, enabling easy navigation and clear interpretation of results.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.48\textwidth]{image2.png}}
+    \caption{Home page of the explainable financial prediction dashboard}
+    \label{fig:homepage}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{Loan Approval Prediction Results}
+% ------------------------------------------------------------
+
+The loan approval module processes applicant financial details such as income, credit history, loan amount, and employment information to generate an approval or rejection decision along with a probability score.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image3.png}}
+    \caption{Loan approval prediction interface}
+    \label{fig:loan}
+\end{figure}
+
+To enhance transparency, LIME is used to explain individual predictions by highlighting the features that positively or negatively influence the loan decision.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image4.png}}
+    \caption{LIME explanation for loan approval prediction}
+    \label{fig:lime}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{Property Price Estimation Results}
+% ------------------------------------------------------------
+
+The property price estimation module predicts real estate prices based on inputs such as property size, number of bedrooms, city tier, and location-related attributes, and displays the estimated value on the dashboard.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image5.png}}
+    \caption{Property price estimation interface}
+    \label{fig:property}
+\end{figure}
+
+SHAP is applied to explain the predictions by showing how each feature contributes to increasing or decreasing the estimated property price.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image6.png}}
+    \caption{SHAP explanation for property price estimation}
+    \label{fig:shap_property}
+\end{figure}
+
+These explanations help users identify the key property attributes influencing valuation.
+
+% ------------------------------------------------------------
+\subsection{Stock Price Forecasting Results}
+% ------------------------------------------------------------
+
+The stock price forecasting module allows users to input historical stock information such as previous prices, trading volume, and daily change. Based on these inputs, the system generates a predicted stock price.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image7.png}}
+    \caption{Stock price prediction interface}
+    \label{fig:stock}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.45\textwidth]{image8.png}}
+    \caption{SHAP explanation for stock price forecasting}
+    \label{fig:shap_stock}
+\end{figure}
+
+These explanations provide clarity on how historical market variables influence stock price predictions.
+
+The system enables users to explore predictions and explanations interactively by modifying input parameters and observing corresponding changes in the output. The integration of explainable AI techniques improves transparency and supports informed financial decision-making across all supported domains.

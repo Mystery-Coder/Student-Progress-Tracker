@@ -4,13 +4,11 @@ import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/skills.dart';
 import 'package:student_progress_app/routes/tabs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_KEY']!,
+    url: "https://ztagrfwdunxdrnvledax.supabase.co",
+    anonKey: "sb_publishable_IjvDDDK4jlzu6sKnGFLauQ_nWQHFCTn",
   );
   runApp(AppRoot());
 }
