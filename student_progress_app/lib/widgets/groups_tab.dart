@@ -1,94 +1,67 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:student_progress_app/types.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:student_progress_app/providers/groups_providers.dart';
 
-class GroupsTab extends StatefulWidget {
+class GroupsTab extends ConsumerWidget {
   const GroupsTab({super.key});
 
   @override
-  State<GroupsTab> createState() => _GroupsTabState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groupsAsync = ref.watch(groupsProvider);
+    final spinkit = const SpinKitDualRing(color: Colors.amberAccent);
 
-class _GroupsTabState extends State<GroupsTab>
-    with AutomaticKeepAliveClientMixin {
-  bool loaded = true;
-  List<GroupDetails> groups = [];
-
-  final spinkit = SpinKitDualRing(color: Colors.amberAccent);
-  final supabase = Supabase.instance.client;
-  late final user = supabase.auth.currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    _getGroupDetails();
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  void _getGroupDetails() async {
-    try {
-      final res = await supabase.rpc(
-        'get_student_groups_from_id',
-        params: {'id_of_student': user!.id},
-      );
-      if (res.isNotEmpty) {
-        setState(() {
-          groups = res.map<GroupDetails>((group) {
-            return GroupDetails(
-              GroupID: group['Group_ID'],
-              GroupName: group['Group_Name'],
-            );
-          }).toList();
-        });
-      }
-    } catch (e) {
-      print("Group Details Error: $e");
-    }
-  }
-
-  //Number of Groups check
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return loaded
-        ? (Center(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Groups You're a Part Of",
-                    style: TextStyle(fontWeight: FontWeight.w300, fontSize: 24),
-                  ),
-                ),
-                groups.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No groups found",
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      )
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: groups.length,
-                          itemBuilder: (context, index) {
-                            final group = groups[index];
-                            return ListTile(
-                              subtitle: Text(group.GroupID),
-                              title: Text(group.GroupName),
-                              leading: Icon(Icons.group),
-                            );
-                          },
-                        ),
-                      ),
-              ],
+    return groupsAsync.when(
+      loading: () => Center(child: spinkit),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text('Error: ${error.toString()}'),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => ref.refresh(groupsProvider),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
             ),
-          ))
-        : Center(child: spinkit);
+          ],
+        ),
+      ),
+      data: (groups) => Center(
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Groups You're a Part Of",
+                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 24),
+              ),
+            ),
+            groups.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No groups found",
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: groups.length,
+                      itemBuilder: (context, index) {
+                        final group = groups[index];
+                        return ListTile(
+                          subtitle: Text(group.GroupID),
+                          title: Text(group.GroupName),
+                          leading: const Icon(Icons.group),
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
   }
 }

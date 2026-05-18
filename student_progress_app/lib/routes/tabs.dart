@@ -1,41 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student_progress_app/providers/auth_providers.dart';
+import 'package:student_progress_app/providers/student_providers.dart';
 import 'package:student_progress_app/routes/login.dart';
 import 'package:student_progress_app/routes/skills.dart';
-// import 'package:student_progress_app/types.dart';
 import 'package:student_progress_app/widgets/academics_tab.dart';
 import 'package:student_progress_app/widgets/details_tab.dart';
 import 'package:student_progress_app/widgets/groups_tab.dart';
 import 'package:student_progress_app/widgets/model_tab.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class Tabs extends StatefulWidget {
+class Tabs extends ConsumerStatefulWidget {
   const Tabs({super.key});
   static const routeName = "/tabs";
 
   @override
-  State<Tabs> createState() => _TabsState();
+  ConsumerState<Tabs> createState() => _TabsState();
 }
 
-class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
+class _TabsState extends ConsumerState<Tabs>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final supabase = Supabase.instance.client;
-  late final session = supabase.auth.currentSession;
-  late final user = session?.user;
-  // ignore: non_constant_identifier_names
-  String USN = "";
-  // StudentDetails studentDetails = StudentDetails(
-  //   USN: "",
-  //   PUC: 0,
-  //   SSLC: 0,
-  //   noOfHackathons: 0,
-  //   noOfInternships: 0,
-  //   noOfProjects: 0,
-  // );
 
   @override
-  initState() {
+  void initState() {
     super.initState();
-    _getDetails();
     _tabController = TabController(length: 4, vsync: this);
   }
 
@@ -45,33 +33,17 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _getDetails() async {
-    try {
-      final data = await supabase
-          .from("STUDENT")
-          .select("USN")
-          .eq("user_id", user!.id);
-
-      setState(() {
-        USN = data[0]["USN"];
-      });
-    } catch (e) {
-      print("details error: $e");
-    }
-    // setState(() {
-    //   USN = data[0]["USN"];
-    // });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final usnAsync = ref.watch(usnProvider);
+
     return SafeArea(
       child: Scaffold(
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
+              const DrawerHeader(
                 decoration: BoxDecoration(color: Colors.blue),
                 child: Text(
                   'Menu',
@@ -79,17 +51,18 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.emoji_events),
-                title: Text("Skills"),
+                leading: const Icon(Icons.emoji_events),
+                title: const Text("Skills"),
                 onTap: () {
                   Navigator.pushNamed(context, Skills.routeName);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.logout),
-                title: Text("Logout"),
+                leading: const Icon(Icons.logout),
+                title: const Text("Logout"),
                 onTap: () async {
                   try {
+                    final supabase = ref.read(supabaseProvider);
                     await supabase.auth.signOut();
                     if (context.mounted) {
                       Navigator.pushReplacementNamed(context, Login.routeName);
@@ -103,7 +76,18 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
           ),
         ),
         appBar: AppBar(
-          title: Text(USN, style: TextStyle(fontWeight: FontWeight.w500)),
+          title: usnAsync.when(
+            data: (usn) =>
+                Text(usn, style: const TextStyle(fontWeight: FontWeight.w500)),
+            loading: () => const Text(
+              'Loading...',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            error: (_, __) => const Text(
+              'Error',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
           backgroundColor: Colors.blue,
           centerTitle: true,
         ),
