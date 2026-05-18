@@ -1,6 +1,6 @@
 # Student Progress Tracker
 
-A comprehensive student performance tracking and placement prediction system built with React, Flutter, and FastAPI. The application enables educational institutions to monitor student progress, analyze academic performance, and predict placement outcomes using machine learning.
+A concise student performance tracking and placement prediction system built with React, Flutter, and FastAPI. The project helps institutions monitor student progress, analyze academic performance, and predict placement outcomes using machine learning.
 
 ## Overview
 
@@ -43,9 +43,8 @@ Student Progress Tracker is a full-stack application designed to help faculty tr
 
 ### Backend
 
-- **FastAPI**: High-performance Python web framework
-- **Supabase**: PostgreSQL database with real-time capabilities
-- **MongoDB**: Alternative NoSQL database support via Motor
+- **FastAPI**: High-performance Python web framework powering the API
+- **Databases**: Primary storage with Supabase (PostgreSQL). The FastAPI backend also supports NoSQL storage via MongoDB (using Motor) for flexible document models and use-cases requiring schemaless data.
 - **Machine Learning**: scikit-learn, pandas, numpy for placement prediction
 
 ### Machine Learning
@@ -66,34 +65,34 @@ Student Progress Tracker is a full-stack application designed to help faculty tr
 ```
 ├── api/                          # FastAPI backend
 │   ├── app.py                   # Main API application
-│   ├── database/                # Database clients
+│   ├── database/                # Database clients (Supabase + optional Mongo)
 │   │   └── supabase_client.py  # Supabase connection handler
 │   ├── ml/                      # Machine learning modules
 │   │   └── predictor.py        # Placement prediction model
 │   └── utils/                   # Utility functions
 │       └── recommendations.py  # Recommendation generator
-│
+
 ├── frontend/                    # React web application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
 │   │   ├── pages/              # Main application pages
 │   │   └── routes/             # Routing configuration
 │   └── package.json
-│
+
 ├── student_progress_app/        # Flutter mobile application
 │   ├── lib/
 │   │   ├── main.dart          # App entry point
 │   │   ├── routes/            # Navigation routes
 │   │   └── widgets/           # Reusable widgets
 │   └── pubspec.yaml
-│
+
 ├── data/                        # Training datasets
 │   ├── placementdata - 10k.csv
 │   └── student career suggestion - 20k.csv
-│
+
 ├── models/                      # Trained ML models
-    ├── RF_final.pkl           # Random Forest model
-    └── cleaning.ipynb         # Data preprocessing notebook
+│   ├── RF_final.pkl           # Random Forest model
+│   └── cleaning.ipynb         # Data preprocessing notebook
 
 ```
 
@@ -122,6 +121,20 @@ Predicts placement probability for a student by USN (University Seat Number).
 - Confidence level
 - Feature analysis
 - Personalized recommendations
+
+### API Routes
+
+- **GET /**: Root endpoint; returns basic API metadata and available endpoints (including `/docs`).
+- **GET /health**: Health check — returns service status, whether the ML model is loaded, and database connectivity.
+- **GET /predict/{usn}**: Placement prediction for the given student USN. Returns placement score, prediction, confidence, features, and recommendation.
+- **GET /docs**: Interactive API docs (Swagger UI) served by FastAPI.
+- **GET /openapi.json**: OpenAPI spec for the API.
+
+CO marks (NoSQL / MongoDB-backed) endpoints:
+
+- **POST /api/co-marks/save**: Save or update CO marks for a student. Expects a JSON body with `student_usn`, `group_id`, `course_code`, `exam_type`, and `co_data`.
+- **GET /api/co-marks/{student_usn}/{group_id}**: Retrieve CO marks for a specific student inside a group.
+- **GET /api/co-marks/group/{group_id}**: Retrieve all CO marks documents for a specific group.
 
 ## Database Schema
 
@@ -152,21 +165,4 @@ The placement prediction system uses a **Random Forest Classifier** trained on h
 4. Generate placement probability score
 5. Provide personalized recommendations based on weak areas
 
-## Development Checklist
-
-- [x] Database schema design using DrawSQL
-- [x] Supabase setup with DDL from DrawSQL
-- [x] Python FastAPI backend implementation
-- [x] ML model for placement probability prediction
-- [x] React web application
-- [x] Flutter mobile application
-- [x] API documentation
-- [x] LaTeX technical documentation
-
-## Contributing
-
-This project is developed as part of the DBMS Lab coursework. For any questions or contributions, please refer to the technical documentation in the `LaTex/` directory.
-
-## License
-
-This project is developed for educational purposes.
+<!-- Development checklist, Contributing, and License sections removed as requested -->

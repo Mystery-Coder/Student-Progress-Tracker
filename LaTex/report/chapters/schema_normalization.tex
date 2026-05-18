@@ -1,0 +1,74 @@
+% ============================================================
+% CHAPTER 5: RELATIONAL SCHEMA AND NORMALIZATION
+% ============================================================
+
+\chapter{Relational Schema and Normalization}
+
+% ------------------------------------------------------------
+\section{Preamble}
+% ------------------------------------------------------------
+
+A well-designed relational database forms the foundation of any data-intensive system. In the context of the Crypto Opinion Extraction system, where data is generated continuously from social media platforms, improper database design can lead to redundancy, inconsistency, and poor scalability. The system relies on a carefully structured relational schema to ensure data integrity, efficient querying, and seamless integration with analytics layers.
+
+This chapter presents the relational schema derived from the Entity Relationship (ER) diagram of the project. It explains how conceptual entities and relationships are mapped into relational tables, followed by a detailed normalization process to eliminate redundancy and dependency anomalies. The final normalized schema supports structured storage of Reddit data related to users, posts, comments, and subreddits.
+
+The normalization process adheres to standard database normalization principles up to Third Normal Form (3NF), ensuring that each table represents a single concept, all attributes are functionally dependent on the primary key, and no transitive dependencies exist. This design enables consistent data management while supporting advanced analytical operations.
+
+% ------------------------------------------------------------
+\section{Schema Diagram}
+% ------------------------------------------------------------
+
+The Schema Diagram maps the entities from the ER diagram into specific tables. Below is the relational mapping:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig5_1.png}
+    \caption{Schema Diagram}
+    \label{fig:schema}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Normalization Process}
+% ------------------------------------------------------------
+
+% ............................................................
+\subsection{First Normal Form (1NF)}
+% ............................................................
+
+1NF is the most basic level of database normalization, requiring that each column (attribute) in a table contains only atomic (single, indivisible) values, with no repeating groups or multi-valued cells, ensuring each cell holds just one piece of data for a unique record. The changes were:
+
+\begin{itemize}
+    \item The composite attribute ``Name'' from the ER diagram is decomposed into F\_Name and L\_Name.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig5_2.png}
+    \caption{1NF Normalization Diagram}
+    \label{fig:1nf}
+\end{figure}
+
+% ............................................................
+\subsection{Second Normal Form (2NF)}
+% ............................................................
+
+2NF is a database design standard where a table must first be in 1NF (First Normal Form) and have no partial dependencies, meaning every non-key attribute must depend on the entire primary key, not just a part of it, especially crucial for composite keys (keys with multiple columns).
+
+(The structure and data remains identical to 1NF form.)
+
+% ............................................................
+\subsection{Third Normal Form (3NF)}
+% ............................................................
+
+3NF is a database design principle where a table is in 2NF and has no transitive dependencies, meaning non-key attributes don't depend on other non-key attributes, only directly on the primary key. The changes were:
+
+\begin{itemize}
+    \item There was a hidden transitive dependency in the Operator table (Op\_Id $\rightarrow$ Department $\rightarrow$ Department\_Location). The fix was that we moved the Department details into its own table. Now, the Operator table only contains a Dept\_Id.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig5_3.png}
+    \caption{3NF Normalization Diagram}
+    \label{fig:3nf}
+\end{figure}

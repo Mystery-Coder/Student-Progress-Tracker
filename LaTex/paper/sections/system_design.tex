@@ -1,0 +1,66 @@
+% ============================================================
+% SECTION: SYSTEM DESIGN
+% ============================================================
+
+\section{System Design}
+
+The Machine Learning Prediction System provides predictive analytics along with explainable insights through an interactive web-based interface. It integrates a frontend application with a backend machine learning framework and explainable AI techniques to ensure transparency, reliability, and interpretability of predictions.
+
+The system workflow begins with user interaction through the frontend, where structured input forms are presented based on the selected prediction domain, such as loan approval, property valuation, or stock price prediction. User inputs are validated at the frontend level and then transmitted to the backend via a JSON-based POST request using a Flask API. Upon receiving the data, the backend performs preprocessing operations, including feature encoding and normalization, to ensure compatibility with the trained models. The processed data is then passed to the appropriate machine learning model to generate predictions.
+
+To enhance model transparency, the system applies explainable AI methods based on the prediction type. LIME is used to provide instance-level explanations for loan approval predictions, while SHAP is employed for interpreting property valuation and stock price forecasts. The prediction results and explanation data are returned to the frontend, where they are visualized for the user. The system also supports iterative input modification, enabling users to analyze different scenarios and make informed financial decisions.
+
+% ------------------------------------------------------------
+\subsection{Software Requirements}
+% ------------------------------------------------------------
+
+The development and implementation of the proposed explainable multi-task deep learning framework for credit risk assessment require a set of software tools and libraries that support data preprocessing, model training, evaluation, and interpretability analysis. The software environment is designed to be modular, scalable, and compatible with standard machine learning workflows.
+
+\begin{itemize}
+    \item NumPy - Numerical computation and array operations
+    \item Pandas - Data manipulation and preprocessing
+    \item Matplotlib / Seaborn - Data visualization and exploratory data analysis
+    \item Scikit-learn - Data preprocessing, baseline models, evaluation metrics, and SMOTE implementation
+    \item TensorFlow / PyTorch - Implementation of the multi-task deep learning model
+    \item SHAP \& LIME - Model explainability and feature attribution analysis
+    \item Imbalanced-learn - Handling class imbalance using oversampling techniques
+    \item SciPy - Statistical analysis and optimization support
+    \item Flask - To handle the Backend server and model loading
+    \item React.js - Web based Framework used to create the Frontend
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection{Hardware Requirements}
+% ------------------------------------------------------------
+
+The hardware requirements depend on the scale of the dataset and the computational complexity of the machine learning models. The following configuration is sufficient for training and evaluating the proposed multi-task learning framework on moderate-sized datasets:
+
+\textbf{Processor (CPU):}
+\begin{itemize}
+    \item Intel Core i3 / i5 or equivalent AMD processor
+    \item Sufficient for data preprocessing, training classical ML models, and running a basic neural network.
+\end{itemize}
+
+\textbf{Memory (RAM):}
+\begin{itemize}
+    \item Minimum: 8 GB
+    \item Adequate for handling datasets, model execution, SHAP/LIME explanations, and running a web-based dashboard.
+\end{itemize}
+
+\textbf{Storage:}
+\begin{itemize}
+    \item 256 GB HDD / SSD
+    \item Used for storing datasets, trained models, and project files.
+\end{itemize}
+
+\textbf{Graphics Processing Unit (GPU):}
+\begin{itemize}
+    \item Not mandatory
+    \item CPU-based training and inference are sufficient for this project since datasets and models are of moderate size.
+\end{itemize}
+
+\textbf{System Architecture:}
+\begin{itemize}
+    \item 64-bit operating system
+    \item Required for compatibility with machine learning libraries and frameworks.
+\end{itemize}

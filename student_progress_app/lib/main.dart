@@ -8,8 +8,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
-    url: 'https://ztagrfwdunxdrnvledax.supabase.co',
-    anonKey: 'sb_publishable_IjvDDDK4jlzu6sKnGFLauQ_nWQHFCTn',
+    url: "https://ztagrfwdunxdrnvledax.supabase.co",
+    anonKey: "sb_publishable_IjvDDDK4jlzu6sKnGFLauQ_nWQHFCTn",
   );
   runApp(const ProviderScope(child: AppRoot()));
 }

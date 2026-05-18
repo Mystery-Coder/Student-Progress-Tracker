@@ -1,0 +1,102 @@
+% ============================================================
+% CHAPTER 2: SOFTWARE REQUIREMENT SPECIFICATION
+% ============================================================
+
+\chapter{Software Requirement Specification}
+
+% ------------------------------------------------------------
+\section{Software Requirements}
+% ------------------------------------------------------------
+
+The Crypto Opinion Extraction and Question Answering System requires a combination of database technologies, analytics tools, and application frameworks to support integrated data management and intelligent analysis.
+
+\begin{itemize}
+    \item \textbf{Relational Database Management System:} PostgreSQL is used for relational data storage and MongoDB for NoSQL-based storage of semi-structured and live data.
+    \item \textbf{Backend and Integration Tools:} Reddit APIs (PullPush, RSS feeds) are used for fetching posts and comments.
+    \item \textbf{Libraries and Frameworks:} Python libraries such as Pandas and NumPy for data manipulation, Natural Language Toolkit (NLTK) for text preprocessing, FAISS for vector similarity search and transformers library for opinion extraction and question answering.
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Hardware Requirements}
+% ------------------------------------------------------------
+
+The minimum hardware requirements for implementing the system are as follows:
+
+\begin{itemize}
+    \item A standard computer or laptop with a 64-bit operating system.
+    \item Minimum 8 GB RAM for running databases and analytics processes.
+    \item Adequate storage for datasets and logs.
+    \item Internet connectivity for downloading datasets and required software packages.
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Functional Requirements}
+% ------------------------------------------------------------
+
+The Crypto Opinion Extraction and Question Answering System is designed as a data-driven platform to collect, store, and analyze cryptocurrency-related discussions from social media sources. The system focuses on efficient database design, data management and support for analytical processing.
+
+% ............................................................
+\subsection{Data Ingestion and Integration}
+% ............................................................
+
+\begin{itemize}
+    \item The system shall collect cryptocurrency-related posts and comments from Reddit using predefined subreddits.
+    \item The system shall extract relevant metadata such as user information, timestamps, subreddit names, and post identifiers.
+    \item The system shall validate and preprocess incoming data before storing it in the database.
+\end{itemize}
+
+% ............................................................
+\subsection{Data Storage and Management}
+% ............................................................
+
+\begin{itemize}
+    \item The system shall store validated data in a normalized relational database.
+    \item The system shall maintain relationships between users, posts, comments, and subreddits using primary and foreign keys.
+    \item The system shall support basic database operations such as insertion, update, deletion, and retrieval of records.
+    \item The system shall ensure data consistency and integrity through appropriate constraints.
+\end{itemize}
+
+% ............................................................
+\subsection{NoSQL Data Handling}
+% ............................................................
+
+\begin{itemize}
+    \item The system shall store semi-structured and sentiment analysis of Reddit data using a NoSQL database.
+    \item The system shall support flexible schema design to accommodate variations in post and comment structures.
+    \item The system shall enable efficient retrieval of large volumes of textual data for analysis using indexes.
+\end{itemize}
+
+% ............................................................
+\subsection{Opinion Extraction and Text Processing}
+% ............................................................
+
+\begin{itemize}
+    \item The system shall preprocess textual data by performing tokenization, stop-word removal, and normalization.
+    \item The system shall support opinion extraction from posts and comments related to cryptocurrencies.
+    \item The system shall store extracted opinions in a form suitable for querying and analysis.
+\end{itemize}
+
+% ............................................................
+\subsection{Question Answering System}
+% ............................................................
+
+\begin{itemize}
+    \item The system shall allow users to query the question answering system.
+    \item The system shall retrieve relevant posts and comments in response to user queries.
+    \item The system shall support question answering by identifying contextually relevant information from stored data.
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Non-Functional Requirements}
+% ------------------------------------------------------------
+
+The non-functional requirements define the quality attributes and constraints of the system.
+
+\begin{itemize}
+    \item \textbf{Performance:} The system should efficiently handle database queries and text processing operations.
+    \item \textbf{Scalability:} The system should support growth in the number of posts, comments, and users without performance degradation.
+    \item \textbf{Reliability:} The system should maintain data consistency and ensure reliable storage and retrieval of information.
+    \item \textbf{Security:} Access to the database should be controlled and data integrity should be protected.
+    \item \textbf{Maintainability:} The system should be modular and easy to update or extend.
+    \item \textbf{Usability:} The system should allow easy interaction with the database and retrieval of information.
+\end{itemize}

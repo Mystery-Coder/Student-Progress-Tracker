@@ -1,0 +1,195 @@
+% ============================================================
+% CHAPTER 4: DETAILED DESIGN
+% ============================================================
+
+\chapter{Detailed Design}
+
+The Detailed Design phase of the Crypto Opinion Extraction and Question Answering System focuses on explaining how data flows through the system and how individual processes interact with external entities and internal data stores. While the Entity Relationship Diagram (ERD) defines the static structure of the database, Data Flow Diagrams (DFDs) provide a dynamic view of the system by illustrating how data is retrieved, processed, analyzed, stored, and delivered to users.
+
+In this project, DFDs are modeled across three abstraction levels: Level 0 (Context Diagram), Level 1 (System Decomposition), and Level 2 (Detailed Sentiment Processing). This layered representation ensures clarity, modularity, and traceability of system functionality.
+
+% ------------------------------------------------------------
+\section{DFD Level 0 -- Context Diagram}
+% ------------------------------------------------------------
+
+The Level 0 Data Flow Diagram (DFD), also known as the Context Diagram, presents a high-level overview of the Crypto-Opinion Extraction System as shown in Fig. \ref{fig:dfd_level0}. At this level, the entire system is represented as a single process, with emphasis on defining system boundaries and illustrating how the system interacts with external entities. Internal processing details are intentionally abstracted to focus on data exchange between the system and its environment.
+
+% ............................................................
+\subsection{External Entities}
+% ............................................................
+
+The system interacts with the following external entities:
+
+\begin{itemize}
+    \item \textbf{Reddit:} Acts as the primary data source for the system. It provides cryptocurrency-related posts, comments, and associated metadata that serve as the foundation for sentiment analysis and opinion extraction.
+    \item \textbf{User:} Represents analysts or end users who interact with the system. Users submit queries related to cryptocurrency trends or sentiments and receive generated opinions and sentiment insights as outputs.
+\end{itemize}
+
+% ............................................................
+\subsection{Central Process}
+% ............................................................
+
+\begin{itemize}
+    \item \textbf{P0: Crypto-Opinion Extraction System:} This central process encapsulates all system functionality, including retrieving posts and comments from Reddit, performing sentiment analysis, extracting opinions, and responding to user queries. At the Level 0 DFD, these internal operations are treated as a single unified process.
+\end{itemize}
+
+% ............................................................
+\subsection{Data Flow Description}
+% ............................................................
+
+Data flows from the Reddit platform into the Crypto-Opinion Extraction System in the form of posts, comments, and relevant metadata. The system processes this incoming data using sentiment analysis and opinion extraction techniques. User queries are provided as input to the system, guiding the analysis and retrieval process. In response, the system generates sentiment insights, opinion summaries, and structured outputs which are delivered back to the user.
+
+The Level 0 DFD establishes the overall purpose and scope of the system while clearly defining its interactions with external entities. It provides a foundation for further decomposition, which is expanded upon in the Level 1 DFD.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig4_1.png}
+    \caption{DFD Level 0 Diagram}
+    \label{fig:dfd_level0}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{DFD Level 1 -- System Decomposition}
+% ------------------------------------------------------------
+
+The Level 1 Data Flow Diagram (DFD) provides a detailed breakdown of the overall system by decomposing the main process identified in the Level 0 DFD into several interconnected subprocesses. Each subprocess performs a specific function, and data flows between external entities, processing components, and data stores to support sentiment analysis and opinion generation from Reddit cryptocurrency discussions. It is shown in Fig. \ref{fig:dfd_level1}.
+
+% ............................................................
+\subsection{Data Collection}
+% ............................................................
+
+This process is responsible for retrieving cryptocurrency-related posts and comments from Reddit using the APIs. Relevant metadata such as post titles, comment text, timestamps, and subreddit information are also collected. The extracted data serves as the raw input for all subsequent processing stages.
+
+% ............................................................
+\subsection{Preprocess Text}
+% ............................................................
+
+In this stage, the raw Reddit data is cleaned and normalized to improve data quality and consistency. Preprocessing activities include removing URLs and special characters, eliminating stop words, and handling duplicates. The cleaned and structured posts and comments are then stored in the Reddit Data store, enabling efficient reuse for analysis and querying.
+
+% ............................................................
+\subsection{Sentiment Analysis}
+% ............................................................
+
+This process retrieves the preprocessed posts and comments from the Reddit Data store and applies sentiment analysis techniques to determine the emotional polarity of the text. Each post or comment is assigned a sentiment score and, where applicable, a sentiment label (such as positive, negative, neutral or noise). The resulting sentiment information is stored in the Sentiment Data store for later retrieval and analysis.
+
+% ............................................................
+\subsection{Generate Embeddings and Index}
+% ............................................................
+
+In this process, vector embeddings are generated from the processed text using a language model. These embeddings capture the semantic meaning of posts and comments, allowing the system to perform similarity-based searches. The embeddings are indexed and stored in the Embeddings and Index data store, which supports fast and accurate semantic retrieval.
+
+% ............................................................
+\subsection{Answer Queries}
+% ............................................................
+
+This process handles user queries related to cryptocurrency sentiment and investments. When a query is received, the system retrieves relevant embeddings from the Embeddings and Index data store and combines them with sentiment scores from the Sentiment Data store. Based on semantic similarity and sentiment trends, the system generates meaningful opinions and sentiment insights, which are then presented to the user.
+
+% ............................................................
+\subsection{Data Stores}
+% ............................................................
+
+The system utilizes the following data stores to manage and persist data efficiently:
+
+\begin{itemize}
+    \item \textbf{Reddit Data:} Stores cleaned and preprocessed Reddit posts and comments.
+    \item \textbf{Sentiment Data:} Stores sentiment scores and sentiment classifications derived from analysis.
+    \item \textbf{Embeddings and Index:} Stores vector embeddings and indexing structures used for semantic search and query answering.
+\end{itemize}
+
+The Level 1 DFD demonstrates how responsibilities are divided across processes and how data flows between them.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig4_2.png}
+    \caption{DFD Level 1 Diagram}
+    \label{fig:dfd_level1}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{DFD Level 2 -- Detailed Opinion and Sentiment Processing}
+% ------------------------------------------------------------
+
+The Level 2 Data Flow Diagram (DFD) provides an in-depth decomposition of the sentiment and opinion analysis component of the system. It illustrates how unprocessed Reddit posts and comments are incrementally transformed into structured sentiment outputs through a sequence of specialized subprocesses. This level focuses on the internal logic of sentiment computation and data refinement.
+
+% ............................................................
+\subsection{Retrieve Unprocessed Posts and Comments}
+% ............................................................
+
+This subprocess retrieves posts and comments that have not yet been analyzed from the Reddit Data store. Only unprocessed records are selected to ensure efficient processing and to prevent duplicate sentiment evaluations.
+
+% ............................................................
+\subsection{Text Normalization and Cleaning}
+% ............................................................
+
+The retrieved text undergoes normalization and cleaning to remove noise and inconsistencies. This includes removal of special characters and URLs, and lemmatization to standardize word forms. The output is clean, structured text suitable for downstream analysis.
+
+% ............................................................
+\subsection{Contextual Text Construction}
+% ............................................................
+
+In this stage, the cleaned text is enriched with contextual information, such as surrounding sentences or metadata, to create context-aware text representations. This improves the system's ability to correctly interpret sentiment, particularly in ambiguous or domain-specific cryptocurrency discussions.
+
+% ............................................................
+\subsection{Token Length Validation}
+% ............................................................
+
+The context-aware text is evaluated based on token length constraints imposed by the sentiment analysis model. Short text segments are forwarded directly to sentiment probability estimation, while longer texts are flagged for further segmentation.
+
+% ............................................................
+\subsection{Text Chunking}
+% ............................................................
+
+Text segments that exceed the token limit are divided into smaller, overlapping chunks. This ensures that long posts and comments can be processed accurately without losing semantic meaning or exceeding model input limitations.
+
+% ............................................................
+\subsection{Sentiment Probability Estimation}
+% ............................................................
+
+Sentiment probabilities are computed for each short text segment or text chunk using a sentiment analysis model. The model outputs probability scores corresponding to different sentiment classes, such as positive, negative, or neutral.
+
+% ............................................................
+\subsection{Sentiment Probability Aggregation}
+% ............................................................
+
+For texts that were divided into multiple chunks, individual sentiment probabilities are aggregated to calculate a total sentiment probability. This aggregation provides a holistic sentiment representation of the original post or comment.
+
+% ............................................................
+\subsection{Confidence Threshold Evaluation}
+% ............................................................
+
+The aggregated sentiment probability is evaluated against predefined confidence thresholds. This step determines the final sentiment label and ensures that low-confidence predictions are handled appropriately, improving the reliability of sentiment classification.
+
+% ............................................................
+\subsection{Keyword Extraction}
+% ............................................................
+
+Key terms and phrases are extracted from the lemmatized text to enhance interpretability and explainability of the sentiment results. These keywords help summarize the main topics and sentiments expressed in each post or comment.
+
+% ............................................................
+\subsection{Write Sentiments and Keywords}
+% ............................................................
+
+The final sentiment labels, sentiment probabilities, and extracted keywords are written to the Sentiment Data store. This data supports later stages such as opinion generation, trend analysis, and user query responses.
+
+% ............................................................
+\subsection{Update Processed Status}
+% ............................................................
+
+Once sentiment processing is complete, the processed status of each post or comment is updated. This prevents redundant processing and ensures that only new or modified data is analyzed in future system runs.
+
+% ............................................................
+\subsection{Outputs}
+% ............................................................
+
+The outputs of the Level 2 process include finalized sentiment labels, aggregated sentiment probabilities, and extracted keywords. These outputs form the analytical foundation for opinion generation, sentiment insights, and semantic query answering within the system.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig4_3.png}
+    \caption{DFD Level 2 Diagram}
+    \label{fig:dfd_level2}
+\end{figure}
+
+The Data Flow Diagrams provide a clear and consistent representation of the Crypto Opinion Extraction and Question Answering System. Beginning with high-level system interactions in Level 0, expanding into functional modules in Level 1, and culminating in detailed sentiment processing in Level 2, the design ensures transparency, scalability, and correctness.
+
+This structured approach enables efficient data retrieval, accurate sentiment analysis, and meaningful opinion generation, fulfilling the core objectives of the project.

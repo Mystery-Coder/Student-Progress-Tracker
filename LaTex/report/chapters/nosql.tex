@@ -1,0 +1,39 @@
+% ============================================================
+% CHAPTER 6: NoSQL
+% ============================================================
+
+\chapter{NoSQL}
+
+% ------------------------------------------------------------
+\section{Preamble}
+% ------------------------------------------------------------
+
+In modern data systems, data is not only structured but also highly interconnected. Relationships between users, posts, comments, and sentiment data play a crucial role in understanding social media behavior. While relational databases efficiently store structured data, they are limited when it comes to analyzing complex, multi-level relationships. To address this limitation, the Crypto Opinion Extraction system incorporates a NoSQL database.
+
+MongoDB is used as the NoSQL component of the system to handle semi-structured Reddit data. By storing documents with flexible schemas, MongoDB enables efficient storage and retrieval of posts and comments that may have varying attributes. This document-based approach supports intelligent analysis and complements the relational database used for core operations.
+
+% ------------------------------------------------------------
+\section{Data Description}
+% ------------------------------------------------------------
+
+In MongoDB, Reddit data is stored using a document model, where each post or comment is represented as a JSON-like document. The database does not replace the relational database but works alongside it to capture and analyze semi-structured social media content.
+
+The primary collections in MongoDB include:
+
+\begin{itemize}
+    \item \textbf{Posts:} Representing Reddit posts with fields like post\_id, title, content, timestamp, user\_id, and subreddit\_id
+    \item \textbf{Comments:} Representing user comments with fields like comment\_id, post\_id, user\_id, content, and timestamp
+    \item \textbf{Live\_Posts:} Storing real-time posts before full processing
+    \item \textbf{Sentiment\_Analysis:} Storing sentiment scores and extracted keywords
+\end{itemize}
+
+Each document stores essential properties such as unique identifiers and textual content. The flexible schema allows for:
+
+\begin{itemize}
+    \item Storing posts with varying metadata fields
+    \item Handling nested comment threads
+    \item Efficiently indexing text fields for search operations
+    \item Storing sentiment analysis results alongside original content
+\end{itemize}
+
+By storing and querying such data in MongoDB, the Crypto Opinion Extraction system enables advanced analytical insights and flexible data modeling that complement the structured relational approach.

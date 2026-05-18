@@ -1,0 +1,41 @@
+% ============================================================
+% SECTION: METHODOLOGY
+% ============================================================
+
+\section{Methodology}
+
+The methodology of this project is structured around three financial domains---loan approval prediction, property price estimation, and stock price forecasting---with an emphasis on interpretability and real-time interaction through a frontend dashboard.
+
+% ------------------------------------------------------------
+\subsection{Data Collection \& Pre-processing}
+% ------------------------------------------------------------
+
+\textbf{Loan Data:} Historical loan datasets containing borrower financial, demographic, and credit behavior attributes are used. Missing values are handled, categorical features are encoded, and numerical features are scaled. Class imbalance is addressed using techniques such as SMOTE.
+
+\textbf{Property Data:} Real estate datasets with property attributes, location, and posting information are preprocessed. Irrelevant features are removed, new features like city and city\_tier are engineered, and outliers in property prices are handled using the IQR method. Categorical features are encoded, and numerical features are scaled. Geocoding is applied to determine latitude and longitude for location-based features.
+
+\textbf{Stock Data:} Historical stock data, including open, high, low, volume, daily change, and previous day's price, is processed. The dataset is sorted chronologically, missing values are handled, and features are scaled using MinMaxScaler. Lag features such as Prev\_Price are included to capture temporal trends in stock prices.
+
+% ------------------------------------------------------------
+\subsection{Predictive Modelling}
+% ------------------------------------------------------------
+
+\textbf{Loan Prediction:} Logistic Regression is applied to predict the probability of loan approval based on a borrower's financial and credit information. It provides outputs such as a `70\% chance of default,' aiding risk-informed lending decisions. This method works well when there is a relatively direct relationship between financial attributes and the likelihood of default, which is commonly observed in financial datasets.
+
+\textbf{Property Valuation:} A Random Forest Regressor is applied to estimate property prices using features such as size, BHK, city tier, and city averages. It is well-suited for this task because it reduces overfitting by averaging multiple decision trees, captures complex non-linear relationships between features, is robust to outliers, and provides feature importance scores to identify the most influential factors in price prediction.
+
+\textbf{Stock Price Forecasting:} A feed-forward neural network (MLP) with two hidden layers is applied to predict stock prices using historical price and volume data. The MLP is effective because it can learn complex, non-linear patterns in structured data, capturing temporal dependencies and relationships between features, making it well-suited for regression tasks like stock price forecasting.
+
+% ------------------------------------------------------------
+\subsection{Explainable AI Integration}
+% ------------------------------------------------------------
+
+Explainable AI techniques like SHAP (SHapley Additive exPlanations) and LIME (Local Interpretable Model-agnostic Explanations) are used to make model predictions interpretable at the feature level. SHAP values quantify the contribution of each feature to a prediction, while LIME approximates complex models locally to explain individual predictions.
+
+In this project, LIME is applied to the loan default model to help users understand why a loan is approved or rejected, whereas SHAP is used for property price estimation and stock price forecasting to highlight which property attributes or market factors most influence the predictions.
+
+% ------------------------------------------------------------
+\subsection{Frontend Dashboard for Real-Time Interaction}
+% ------------------------------------------------------------
+
+A web-based dashboard allows users to input custom data for loan, property, or stock scenarios. Predictions are generated in real time, along with feature-level explanations using XAI, enabling users to understand and justify model outputs. Interactive visualizations provide actionable insights, enhancing transparency and usability for stakeholders.
